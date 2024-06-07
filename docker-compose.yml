@@ -1,10 +1,42 @@
 version: '3.8'
 
 services:
-  agency:
-    image: agency
-    build:
-      context: .
-      dockerfile: ./Dockerfile
+  # agency:
+  #   image: agency
+  #   build:
+  #     context: .
+  #     dockerfile: ./Dockerfile
+  #   ports:
+  #     - 8000:8000
+  #   environment:
+  #     FRONT_END_URL: http://localhost:5173
+  #     DB_NAME: db_agency
+  #     DB_USER: user_agency
+  #     DB_PASSWORD: password_agency
+  #     DB_HOST: postgres-db
+  #     DB_PORT: 5432
+  #     EMAIL_HOST_PASSWORD: "hbyc ljcj mjwh fpgz"
+  #     EMAIL_HOST: smtp.gmail.com
+  #     EMAIL_HOST_USER: rahulpoppad.1999@gmail.com
+  #     EMAIL_USE_TLS: 1
+  #     EMAIL_PORT: 587
+  #     DEBUG: 0
+  #   depends_on:
+  #     - postgres-db
+  #   networks:
+  #     - agency_network
+  
+  postgres-db:
+    build: db/postgres
+    container_name: agency_postgres_db
     ports:
-      - 8000:8000
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: user_agency
+      POSTGRES_PASSWORD: password_agency
+      POSTGRES_DB: db_agency
+    networks:
+      - agency_network
+
+networks:
+  agency_network: {}

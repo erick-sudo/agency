@@ -5,7 +5,8 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import smart_str, smart_bytes
 from .utils import send_normal_email
-from rest_framework_simplejwt.tokens import RefreshToken, OutstandingToken
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 from rest_framework.exceptions import AuthenticationFailed
 from django.conf import settings
 from .exception_handlers import SparkleSyncException
@@ -139,10 +140,10 @@ class SetNewPasswordSerializer(serializers.Serializer):
     
 class LogoutUserSerializer(serializers.Serializer):
        
-    # default_error_messages = {
-    #     'bad_token': ('Token is invalid or has expired'),
-    #     'no_token': ('No refresh token provided'),
-    # }
+    default_error_messages = {
+        'bad_token': ('Token is invalid or has expired'),
+        'no_token': ('No refresh token provided'),
+    }
     
     def validate(self, attrs):       
         request = self.context['request']
@@ -150,18 +151,35 @@ class LogoutUserSerializer(serializers.Serializer):
         access_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE'])
         user = request.user
         
-        if not refresh_token:
-            pass
-        
         if not access_token:
-            pass
+            self.fail('no_token')
+            
+        if not refresh_token:
+            print("REFERESH_TOKEN")
+            self.fail('no_token')
         
         try:
+            # Blacklist the refresh token
             token = RefreshToken(refresh_token)
             token.blacklist()
             
-            tokens = OutstandingToken.objects.filter(user=user).delete()
-            print(tokens)
+            # Destroy all outstanding tokens for the user
+            tokens = OutstandingToken.objects.filter(user=user)
+            for token in tokens:
+                # Blacklist each token
+                BlacklistedToken.objects.get_or_create(token=token)
+            tokens.delete()
+            
+            # Blacklist the access token
+            access_token = AccessToken(access_token)
+            if not BlacklistedToken.objects.filter(token=access_token).exists():
+                BlacklistedToken.objects.create(token=access_token)
+                
+            # Clear cookies
+            response = self.context['response']
+            response.delete_cookie(settings.SIMPLE_JWT['REFRESH_COOKIE'])
+            response.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE'])
+            
         except Exception as e:
-            pass
+            self.fail('bad_token')
         return super().validate(attrs)

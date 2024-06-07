@@ -43,8 +43,6 @@ CORS_ALLOWED_ORIGINS = [
     env('FRONT_END_URL')
 ]
 
-ALLOWED_HOSTS = []
-
 
 # Application definition
 

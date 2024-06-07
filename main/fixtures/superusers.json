@@ -1,0 +1,22 @@
+[
+{
+  "model": "main.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$720000$uAxs4yIR56VY2pEnB26zMA$3AnGw71Q6Ktokl6RhP69xo/lUd0Go6FZe0YKJ8OjUms=",
+    "email": "admin@gmail.com",
+    "first_name": "admin",
+    "last_name": "admin",
+    "phone_number": "254000000000",
+    "is_active": true,
+    "is_verified": true,
+    "is_staff": true,
+    "is_superuser": true,
+    "date_joined": "2024-06-07T06:43:42.437Z",
+    "last_login": "2024-06-07T06:43:42.448Z",
+    "auth_provider": "email",
+    "groups": [],
+    "user_permissions": []
+  }
+}
+]
