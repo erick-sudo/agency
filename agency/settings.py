@@ -43,7 +43,6 @@ CORS_ALLOWED_ORIGINS = [
     env('FRONT_END_URL')
 ]
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -55,22 +54,19 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'main.apps.MainConfig',
     'rest_framework',
-    'rest_framework.authtoken',
-    'rest_framework_simplejwt.token_blacklist',
     'corsheaders'
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'main.authentication.SparkleSyncAuthentication',
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'main.authentication.ApplicationJWTAuthentication',
     ),
-    'EXCEPTION_HANDLER': 'main.exception_handlers.sparkle_sync_exception_handler'
+    'EXCEPTION_HANDLER': 'main.exception_handlers.app_exception_handler'
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(hours=24),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(hours=1),
     "REFRESH_COOKIE": "refresh_token",
     "AUTH_HEADER_TYPES": ("Bearer",),
     'AUTH_COOKIE': 'access_token',  
